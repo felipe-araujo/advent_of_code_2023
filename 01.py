@@ -1,3 +1,5 @@
+import sys
+
 algarisms = {'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'zero': 0}
 
 def is_number(d):
@@ -23,10 +25,13 @@ def main():
             sum = sum + digits[0] * 10 + digits[-1]
     print(sum)
 
-def test():
+def run_test():
     for s in ['two1nine', '4nineeightseven2', 'eightwothree']:
         print(s, ' -> ', replace_with_number(s))
+    assert replace_with_number('two1nine') == [2, 1, 9] 
 
 if __name__ == "__main__":
-    main()
-    #test()
+    if len(sys.argv) > 1 and sys.argv[1] == 'test':
+        run_test()
+    else:
+        main()
