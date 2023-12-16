@@ -10,6 +10,7 @@ class Number:
     line_num: int
 
 def is_digit(t: str):
+    assert t != '\n' and t != '\r'
     return ord(t) >= ord('0') and ord(t) <= ord('9')
 
 def is_symbol(t: str):
@@ -31,10 +32,7 @@ def read_numbers(line: str, line_num: int):
             i += 1
 
 def has_adjacent_symbol(n: Number, matrix: list[str]):
-    print(n)
-
     line_size = len(matrix[n.line_num])
-    print(line_size)
     # same line
     if n.start > 0 and is_symbol(matrix[n.line_num][n.start-1]):
         return True
@@ -74,7 +72,7 @@ def main():
         # Alert: I was getting the wrong response because newlines were being counted as symbols!
         matrix = list(map(lambda line: list(line.strip()), f.readlines()))
         total = compute_total(matrix)
-    print(total)
+    print('Part 01: ', total)
     assert not int(total) == 537811
 
 def debug():
