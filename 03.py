@@ -71,12 +71,18 @@ def compute_total(matrix):
 def main():
     total = 0
     with open('03_input.txt') as f:
-        matrix = list(map(lambda line: list(line), f.readlines()))
+        # Alert: I was getting the wrong response because newlines were being counted as symbols!
+        matrix = list(map(lambda line: list(line.strip()), f.readlines()))
         total = compute_total(matrix)
     print(total)
-    assert not int(total) >= 537811
-    
+    assert not int(total) == 537811
 
+def debug():
+    with open('03_input.txt') as f:
+        matrix = list(map(lambda line: list(line), f.readlines()))
+        for line in matrix:
+            print(line)
+    
 def run_test():
     example = """
                 467..114..
@@ -161,9 +167,24 @@ def run_test():
     assert numbers[0].value == 58
     assert not has_adjacent_symbol(numbers[0], example)
 
+    example = \
+        """
+        123.123
+        ...*...
+        567.890
+        """
+    example = dedent(example).strip()
+    print(example)
+    example = list(map((lambda line: list(line.strip())), example.split('\n')))
+    #print(list(read_numbers(example)))
+    total = compute_total(example)
+    assert total == (123+123+567+890), 'total was ' + str(total)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == 'test':
         run_test()
+    elif len(sys.argv) > 1 and sys.argv[1] == 'debug':
+        debug()
     else:
         main()
