@@ -1,8 +1,8 @@
 import sys
 from textwrap import dedent
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
-@dataclass
+@dataclass(frozen=True)
 class Number:
     value: int
     start: int
@@ -16,9 +16,9 @@ def is_digit(t: str):
 def is_symbol(t: str):
     return not is_digit(t) and t != '.'
 
-def read_numbers(line: str, line_num: int):
+def read_numbers(line: str, line_num: int, offset=0):
     acc = []
-    i = 0
+    i = 0 + offset
     while i < len(line):
         start = i
         acc = []
@@ -30,6 +30,37 @@ def read_numbers(line: str, line_num: int):
             yield Number(val, start, i, line_num)
         else:
             i += 1
+
+def read_gears(matrix: list[str]):
+    for i, line in enumerate(matrix):
+        for j, token in enumerate(line):
+            if token == '*':
+                yield (i, j)
+
+# reads the whole number given the position of any of its digits
+def number_at(matrix: list[str], x: int, y: int):
+    if not is_digit(matrix[x][y]):
+        return None
+    while y > 0 and is_digit(matrix[x][y-1]):
+        y -= 1
+    return next(read_numbers(matrix[x], x, offset=y))
+    
+#000
+#0x0
+#000
+def adjacent_numbers(matrix: list[str], x, y):
+    dim_x = len(matrix)
+    dim_y = len(matrix[0])
+    coords = [[x-1, y-1], [x-1, y], [x-1, y+1], 
+              [x, y-1],[x, y+1], 
+              [x+1, y-1], [x+1, y], [x+1, y+1]]
+    numbers = set()
+    for i, j in coords:
+        if i < 0 or i >= dim_x or j < 0 or j >= dim_y:
+            continue
+        if is_digit(matrix[i][j]):
+            numbers.add(number_at(matrix, i, j))
+    return numbers
 
 def has_adjacent_symbol(n: Number, matrix: list[str]):
     line_size = len(matrix[n.line_num])
@@ -74,6 +105,14 @@ def main():
         total = compute_total(matrix)
     print('Part 01: ', total)
     assert not int(total) == 537811
+    
+    acc = []
+    for i, j in read_gears(matrix):
+        numbers = adjacent_numbers(matrix, i, j)
+        if len(numbers) == 2:
+            acc.append(numbers.pop().value * numbers.pop().value)
+    total = sum(acc)
+    print('Part 02: ', total)
 
 def debug():
     with open('03_input.txt') as f:
